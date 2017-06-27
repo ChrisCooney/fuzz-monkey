@@ -1,0 +1,11 @@
+{
+  "endpoints": [
+    {
+      "name": "Chris' Endpoint",
+      "endpoint": "http://localhost:5000",
+      "maxResponseTime": 5000,
+      "minResponseTime": 1000,
+      "successCode": 200
+    }
+  ]
+}
