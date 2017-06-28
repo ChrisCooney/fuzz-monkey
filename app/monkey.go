@@ -2,10 +2,11 @@ package main
 
 import (
 	"fmt"
-	"fuzz-monkey/app/cli"
 )
 
 func main() {
-	config := cli.GetConfig()
+	config := GetConfigFromCli()
 	fmt.Printf("%+v\n",config)
+	result := RunCorrupt(&config.Endpoints[0])
+	fmt.Printf("%+v\n",result)
 }
