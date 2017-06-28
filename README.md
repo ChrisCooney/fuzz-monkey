@@ -14,4 +14,10 @@ go build -o monkey .
 ```
 
 When running the binary, you will need to create a config file to tell the monkey
-in which direction to fling.
+in which direction to fling. An example of this config is in the examples folder.
+If you were to run a binary from the root of the application called `monkey` then
+your command would be..
+
+```
+./monkey examples/config.json
+```
