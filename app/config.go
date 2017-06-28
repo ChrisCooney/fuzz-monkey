@@ -13,7 +13,6 @@ type EndpointConfig struct {
   Name string `json:"name"`
   Endpoint string `json:"endpoint"`
   MaxResponseTime int `json:"maxResponseTime"`
-  MinResponseTime int `json:"minResponseTime"`
   SuccessStatus string `json:"successStatus"`
 }
 
