@@ -14,7 +14,7 @@ type EndpointConfig struct {
   Endpoint string `json:"endpoint"`
   MaxResponseTime int `json:"maxResponseTime"`
   MinResponseTime int `json:"minResponseTime"`
-  SuccessCode int `json:"successCode"`
+  SuccessStatus string `json:"successStatus"`
 }
 
 func GetConfig(configPath string) (*Config) {
