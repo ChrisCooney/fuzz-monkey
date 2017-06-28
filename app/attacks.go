@@ -3,6 +3,7 @@ package main
 import (
   "fmt"
   "net/http"
+  "strings"
 )
 
 type Response struct {
@@ -11,7 +12,7 @@ type Response struct {
 }
 
 func checkHttpResponse(httpResponse *http.Response, config *EndpointConfig) (bool, string) {
-  if httpResponse.Status != config.SuccessStatus {
+  if strings.Trim(httpResponse.Status, " ") != strings.Trim(config.SuccessStatus, " ") {
     reason := fmt.Sprintf("Invalid status code of %s detected. Expected %s", httpResponse.Status, config.SuccessStatus)
     return false, reason
   }
@@ -34,15 +35,11 @@ func RunGarbageSpam(endpointConfig *EndpointConfig) Response {
   fmt.Printf("Running Garbage Spam against %s\n", endpointConfig.Name)
 
   responses := []*http.Response{}
+  c := make(chan *http.Response)
 
-  for i:=0; i < 100; i++ {
-    resp, err := SendRandomHttpRequest(endpointConfig.Endpoint)
-
-    if err != nil {
-      report := fmt.Sprintf("Error occurred firing spam at %s after %d requests. Error= %s", endpointConfig.Endpoint, i, err)
-      return Response{Passed: false, Report: report}
-    }
-
+  for i:=0; i < 1000; i++ {
+    go SendRandomHttpRequest(endpointConfig.Endpoint, c)
+    resp := <- c
     responses = append(responses, resp)
   }
 

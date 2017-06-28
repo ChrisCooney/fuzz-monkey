@@ -6,7 +6,7 @@ import (
   "math/rand"
 )
 
-func SendRandomHttpRequest(endpoint string) (*http.Response, error) {
+func SendRandomHttpRequest(endpoint string, c chan *http.Response) (*http.Response, error) {
   client := &http.Client{}
   method := getRandomRequestMethod()
 
@@ -16,7 +16,11 @@ func SendRandomHttpRequest(endpoint string) (*http.Response, error) {
     return nil, err
   }
 
-  return client.Do(request)
+  response, err := client.Do(request)
+
+  c <- response
+
+  return response, err
 }
 
 func getRandomRequestMethod() string {
