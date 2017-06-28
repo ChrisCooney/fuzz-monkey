@@ -39,8 +39,8 @@ func dispatchMultipleHttpRequests(endpoint string, c chan *http.Response, count 
   }
 }
 
-func RunGarbageSpam(endpointConfig *EndpointConfig) Response {
-  fmt.Printf("Running Garbage Spam against %s\n", endpointConfig.Name)
+func RunHttpSpam(endpointConfig *EndpointConfig) Response {
+  fmt.Printf("Running HTTP Spam against %s\n", endpointConfig.Name)
 
   responses := []*http.Response{}
   c := make(chan *http.Response)
@@ -59,7 +59,7 @@ func RunGarbageSpam(endpointConfig *EndpointConfig) Response {
   passed, reason := checkHttpResponses(responses, endpointConfig)
 
   if !passed {
-    return Response{Passed: false, Report: fmt.Sprintf("Failure during Garbage Spam. %s", reason)}
+    return Response{Passed: false, Report: fmt.Sprintf("Failure during HTTP Spam. %s", reason)}
   }
 
   return Response{Passed: true}

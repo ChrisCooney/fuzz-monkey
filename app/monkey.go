@@ -6,6 +6,6 @@ import (
 
 func main() {
 	config := GetConfigFromCli()
-	result := RunGarbageSpam(&config.Endpoints[0])
+	result := RunHttpSpam(&config.Endpoints[0])
 	fmt.Printf("%+v\n",result)
 }
