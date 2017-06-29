@@ -24,6 +24,11 @@ func checkHttpResponse(httpResponse *http.Response, config EndpointConfig) (bool
 
 func checkHttpResponses(httpResponses []*http.Response, config EndpointConfig) (bool, string) {
   for _,httpResp := range httpResponses {
+
+    if httpResp == nil {
+      return false, "Error occurred during HTTP request"
+    }
+
     passed, reason := checkHttpResponse(httpResp, config)
     if !passed {
       return passed, reason
@@ -35,12 +40,32 @@ func checkHttpResponses(httpResponses []*http.Response, config EndpointConfig) (
 
 func dispatchMultipleHttpRequests(endpoint string, c chan *http.Response, count int) {
   for i := 0; i < count; i++ {
-    _, err := SendRandomHttpRequest(endpoint, c)
-    if err != nil {
-      fmt.Printf("Attempt %d failed with error %v\n", i, err)
-    }
+    SendRandomHttpRequest(endpoint, c)
   }
 }
+
+func dispatchConcurrentHttpRequests(concurrentCount int, endpoint string, c chan *http.Response, count int) {
+  for i:=0; i < concurrentCount; i++ {
+    go dispatchMultipleHttpRequests(endpoint, c, count)
+  }
+}
+
+func collectConcurrentHttpResponses(responses []*http.Response, c chan *http.Response, expectedCount int) []*http.Response {
+  for len(responses) < (expectedCount) {
+    responses = readResponseFromChannel(responses, c)
+  }
+
+  return responses
+}
+
+func readResponseFromChannel(responses []*http.Response, c chan *http.Response) []*http.Response {
+  response := <- c
+  defer response.Body.Close()
+  return append(responses, response)
+}
+
+var NUM_OF_CONCURRENTS = 20
+var MESSAGES_PER_CONCURRENT = 100
 
 func RunHttpSpam(endpointConfig EndpointConfig, responseChannel chan Response) error {
   fmt.Printf("Running HTTP Spam against %s\n", endpointConfig.Name)
@@ -48,16 +73,10 @@ func RunHttpSpam(endpointConfig EndpointConfig, responseChannel chan Response) e
   responses := []*http.Response{}
   c := make(chan *http.Response)
 
-  NUM_OF_CONCURRENTS := 20
-  MESSAGES_PER_CONCURRENT := 500
+  endpoint := BuildHttpUrl(endpointConfig.Host, endpointConfig.Port, endpointConfig.Path)
 
-  for i:=0; i < NUM_OF_CONCURRENTS; i++ {
-    go dispatchMultipleHttpRequests(endpointConfig.Endpoint, c, MESSAGES_PER_CONCURRENT)
-  }
-
-  for len(responses) < (NUM_OF_CONCURRENTS * MESSAGES_PER_CONCURRENT) {
-    responses = append(responses, <- c)
-  }
+  dispatchConcurrentHttpRequests(NUM_OF_CONCURRENTS, endpoint, c, MESSAGES_PER_CONCURRENT)
+  collectConcurrentHttpResponses(responses, c, NUM_OF_CONCURRENTS * MESSAGES_PER_CONCURRENT)
 
   passed, reason := checkHttpResponses(responses, endpointConfig)
 
@@ -67,5 +86,18 @@ func RunHttpSpam(endpointConfig EndpointConfig, responseChannel chan Response) e
   }
 
   responseChannel <- Response{Passed: true}
+  return nil
+}
+
+func RunCorruptHttp(endpointConfig EndpointConfig, responseChannel chan Response) error {
+  fmt.Printf("Running Corrupt HTTP against %s\n", endpointConfig.Name)
+  c := make(chan string)
+  endpoint := BuildTcpUrl(endpointConfig.Host, endpointConfig.Port, endpointConfig.Path)
+  go SendCorruptHttpData(endpoint, c)
+
+  response := <- c
+
+  fmt.Printf("Output was %s", response)
+
   return nil
 }

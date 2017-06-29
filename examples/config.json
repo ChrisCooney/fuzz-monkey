@@ -2,7 +2,17 @@
   "endpoints": [
     {
       "name": "Chris",
-      "endpoint": "http://localhost:5000/orders/1",
+      "host": "localhost",
+      "port": "5000",
+      "path": "/orders/1",
+      "maxResponseTime": 5000,
+      "successStatus": "200"
+    },
+    {
+      "name": "Dave",
+      "host": "localhost",
+      "port": "5000",
+      "path": "/orders/2",
       "maxResponseTime": 5000,
       "successStatus": "200"
     }

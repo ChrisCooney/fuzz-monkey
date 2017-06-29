@@ -6,6 +6,8 @@ import (
 	"time"
 )
 
+var MAX_TIME_BETWEEN_ATTACKS = 60
+
 func main() {
 	config := GetConfigFromCli()
 	wakeTheMonkey(config)
@@ -33,18 +35,22 @@ func setupTargets(config *Config, responseChannel chan Response) {
 
 func beginHarassment(endpoint EndpointConfig, responseChannel chan Response) {
 	for {
-		time.Sleep(time.Duration(rand.Intn(2000)) * time.Millisecond)
 		randomAttack := pickRandomAttack()
-		randomAttack(endpoint, responseChannel)
+		go randomAttack(endpoint, responseChannel)
+		pauseForRandomDuration()
 	}
 }
 
 func pickRandomAttack() (func(endpointConfig EndpointConfig, responseChannel chan Response) error) {
 	diceRoll := rand.Intn(100)
 
-	if diceRoll <= 100 {
+	if diceRoll <= 50 {
 		return RunHttpSpam
+	} else {
+		return RunCorruptHttp
 	}
+}
 
-	return RunHttpSpam
+func pauseForRandomDuration() {
+	time.Sleep(time.Duration(rand.Intn(MAX_TIME_BETWEEN_ATTACKS)) * time.Second)
 }

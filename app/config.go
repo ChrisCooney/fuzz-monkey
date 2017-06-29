@@ -13,7 +13,9 @@ type Config struct {
 
 type EndpointConfig struct {
   Name string `json:"name"`
-  Endpoint string `json:"endpoint"`
+  Host string `json:"host"`
+  Port string `json:"port"`
+  Path string `json:"path"`
   MaxResponseTime int `json:"maxResponseTime"`
   SuccessStatus string `json:"successStatus"`
 }
@@ -37,8 +39,8 @@ func isValidConfig(config *Config) (bool, error) {
       return false, errors.New(fmt.Sprintf("Endpoint name can not be empty for endpoint #%d", i + 1))
     }
 
-    if endpoint.Endpoint == "" {
-      return false, errors.New(fmt.Sprintf("Endpoint can not be null for endpoint with name %s", endpoint.Name))
+    if endpoint.Host == "" {
+      return false, errors.New(fmt.Sprintf("Host can not be null for endpoint with name %s", endpoint.Name))
     }
   }
 
