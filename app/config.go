@@ -3,6 +3,8 @@ package main
 import (
   "encoding/json"
   "io/ioutil"
+  "errors"
+  "fmt"
 )
 
 type Config struct {
@@ -29,9 +31,30 @@ func loadConfigFile(configPath string) ([]byte) {
   return file
 }
 
+func isValidConfig(config *Config) (bool, error) {
+  for i,endpoint := range config.Endpoints {
+    if endpoint.Name == "" {
+      return false, errors.New(fmt.Sprintf("Endpoint name can not be empty for endpoint #%d", i + 1))
+    }
+
+    if endpoint.Endpoint == "" {
+      return false, errors.New(fmt.Sprintf("Endpoint can not be null for endpoint with name %s", endpoint.Name))
+    }
+  }
+
+  return true, nil
+}
+
 func mapFileToObject(contents []byte) (*Config) {
   config := &Config{}
   err := json.Unmarshal(contents, config)
   CheckError(err)
+
+  valid, err := isValidConfig(config)
+
+  if !valid {
+    panic(err)
+  }
+
   return config
 }

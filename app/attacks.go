@@ -11,7 +11,7 @@ type Response struct {
   Report string
 }
 
-func checkHttpResponse(httpResponse *http.Response, config *EndpointConfig) (bool, string) {
+func checkHttpResponse(httpResponse *http.Response, config EndpointConfig) (bool, string) {
   if strings.Trim(httpResponse.Status, " ") != strings.Trim(config.SuccessStatus, " ") {
     reason := fmt.Sprintf("Invalid status code of %s detected. Expected %s", httpResponse.Status, config.SuccessStatus)
     return false, reason
@@ -22,7 +22,7 @@ func checkHttpResponse(httpResponse *http.Response, config *EndpointConfig) (boo
   return true, ""
 }
 
-func checkHttpResponses(httpResponses []*http.Response, config *EndpointConfig) (bool, string) {
+func checkHttpResponses(httpResponses []*http.Response, config EndpointConfig) (bool, string) {
   for _,httpResp := range httpResponses {
     passed, reason := checkHttpResponse(httpResp, config)
     if !passed {
@@ -35,11 +35,14 @@ func checkHttpResponses(httpResponses []*http.Response, config *EndpointConfig) 
 
 func dispatchMultipleHttpRequests(endpoint string, c chan *http.Response, count int) {
   for i := 0; i < count; i++ {
-    SendRandomHttpRequest(endpoint, c)
+    _, err := SendRandomHttpRequest(endpoint, c)
+    if err != nil {
+      fmt.Printf("Attempt %d failed with error %v\n", i, err)
+    }
   }
 }
 
-func RunHttpSpam(endpointConfig *EndpointConfig) Response {
+func RunHttpSpam(endpointConfig EndpointConfig, responseChannel chan Response) error {
   fmt.Printf("Running HTTP Spam against %s\n", endpointConfig.Name)
 
   responses := []*http.Response{}
@@ -59,8 +62,10 @@ func RunHttpSpam(endpointConfig *EndpointConfig) Response {
   passed, reason := checkHttpResponses(responses, endpointConfig)
 
   if !passed {
-    return Response{Passed: false, Report: fmt.Sprintf("Failure during HTTP Spam. %s", reason)}
+    responseChannel <- Response{Passed: false, Report: fmt.Sprintf("Failure during HTTP Spam. %s", reason)}
+    return nil
   }
 
-  return Response{Passed: true}
+  responseChannel <- Response{Passed: true}
+  return nil
 }

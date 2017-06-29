@@ -28,9 +28,7 @@ func getRandomRequestMethod() string {
 
   if diceRoll < 25 {
     return "GET"
-  } else if diceRoll < 50 {
-    return "HEAD"
   } else {
-    return "OPTIONS"
+    return "HEAD"
   }
 }

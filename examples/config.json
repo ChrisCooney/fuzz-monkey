@@ -1,7 +1,7 @@
 {
   "endpoints": [
     {
-      "name": "Chris' Endpoint",
+      "name": "Chris",
       "endpoint": "http://localhost:5000/orders/1",
       "maxResponseTime": 5000,
       "successStatus": "200"
