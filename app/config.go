@@ -16,12 +16,18 @@ type EndpointConfig struct {
   Host string `json:"host"`
   Port string `json:"port"`
   Path string `json:"path"`
+  Attacks []AttackConfig `json:"attacks"`
+}
+
+type AttackConfig struct {
+  Type string `json:"type"`
   MaxResponseTime int `json:"maxResponseTime"`
-  SuccessStatus string `json:"successStatus"`
+  ExpectedStatus string `json:"expectedStatus"`
 }
 
 func GetConfig(configPath string) (*Config) {
   fileContents := loadConfigFile(configPath)
+  fmt.Printf("%v", mapFileToObject(fileContents))
   return mapFileToObject(fileContents)
 }
 

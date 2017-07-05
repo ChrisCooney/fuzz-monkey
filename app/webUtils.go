@@ -33,6 +33,8 @@ func SendRandomHttpRequest(endpoint string, c chan *http.Response) (*http.Respon
 
   response, err := client.Do(request)
 
+  CheckError(err)
+
   c <- response
 
   return response, err

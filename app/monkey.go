@@ -8,6 +8,8 @@ import (
 
 var MAX_TIME_BETWEEN_ATTACKS = 60
 
+var ATTACKS_STRATEGY = map[string](func(endpointConfig EndpointConfig, attackConfig AttackConfig, responseChannel chan Response) error){"HTTP_SPAM": RunHttpSpam,"CORRUPT_HTTP": RunCorruptHttp,}
+
 func main() {
 	config := GetConfigFromCli()
 	wakeTheMonkey(config)
@@ -29,25 +31,20 @@ func listenForResponses(responseChannel chan Response) {
 func setupTargets(config *Config, responseChannel chan Response) {
 	for _,endpoint := range config.Endpoints {
 		fmt.Printf("Setting up %s\n", endpoint.Name)
-		go beginHarassment(endpoint, responseChannel)
+		setupAttackThreads(endpoint, responseChannel)
 	}
 }
 
-func beginHarassment(endpoint EndpointConfig, responseChannel chan Response) {
+func setupAttackThreads(endpoint EndpointConfig, responseChannel chan Response) {
+	for _,attack := range endpoint.Attacks {
+		go beginHarassment(endpoint, attack, responseChannel)
+	}
+}
+
+func beginHarassment(endpoint EndpointConfig, attack AttackConfig, responseChannel chan Response) {
 	for {
-		randomAttack := pickRandomAttack()
-		go randomAttack(endpoint, responseChannel)
+		go ATTACKS_STRATEGY[attack.Type](endpoint, attack, responseChannel)
 		pauseForRandomDuration()
-	}
-}
-
-func pickRandomAttack() (func(endpointConfig EndpointConfig, responseChannel chan Response) error) {
-	diceRoll := rand.Intn(100)
-
-	if diceRoll <= 50 {
-		return RunHttpSpam
-	} else {
-		return RunCorruptHttp
 	}
 }
 
