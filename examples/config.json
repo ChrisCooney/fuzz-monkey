@@ -5,8 +5,13 @@
       "host": "localhost",
       "port": "5000",
       "path": "/orders/1",
-      "maxResponseTime": 5000,
-      "successStatus": "200"
+      "attacks": [
+        {
+          "type": "CORRUPT_HTTP",
+          "maxResponseTime": 5000,
+          "expectedStatus": "400"
+        }
+      ]
     },
     {
       "name": "Dave",
@@ -14,7 +19,14 @@
       "port": "5000",
       "path": "/orders/2",
       "maxResponseTime": 5000,
-      "successStatus": "200"
+      "expectedStatus": "200",
+      "attacks": [
+        {
+          "type": "HTTP_SPAM",
+          "maxResponseTime": 5000,
+          "expectedStatus": "200"
+        }
+      ]
     }
   ]
 }
