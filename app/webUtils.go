@@ -25,19 +25,12 @@ func SendRandomHttpRequest(endpoint string, c chan *http.Response) (*http.Respon
   client := &http.Client{}
   method := getRandomRequestMethod()
 
-  request, err := http.NewRequest(method, endpoint, bytes.NewBufferString("hello"))
+  request, _ := http.NewRequest(method, endpoint, bytes.NewBufferString("hello"))
 
-  if err != nil {
-    return nil, err
-  }
-
-  response, err := client.Do(request)
-
-  CheckError(err)
+  response, _ := client.Do(request)
 
   c <- response
-
-  return response, err
+  return response, nil
 }
 
 var MAX_JUNK_LENGTH = 100
@@ -45,7 +38,10 @@ var MAX_JUNK_LENGTH = 100
 func SendCorruptHttpData(endpoint string, c chan string) error {
   conn, err := net.Dial("tcp", endpoint)
 
-  CheckError(err)
+  if err != nil {
+    c <- ""
+    return err
+  }
 
   junkLength := rand.Intn(MAX_JUNK_LENGTH)
   junkStr := CreateRandomString(junkLength)

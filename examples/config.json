@@ -10,6 +10,11 @@
           "type": "CORRUPT_HTTP",
           "maxResponseTime": 5000,
           "expectedStatus": "400"
+        },
+        {
+          "type": "RANDOM_RABBIT_JSON",
+          "maxResponseTime": 5000,
+          "expectedStatus": "400"
         }
       ]
     },

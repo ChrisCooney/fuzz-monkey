@@ -8,7 +8,7 @@ import (
 
 var MAX_TIME_BETWEEN_ATTACKS = 60
 
-var ATTACKS_STRATEGY = map[string](func(endpointConfig EndpointConfig, attackConfig AttackConfig, responseChannel chan Response) error){"HTTP_SPAM": RunHttpSpam,"CORRUPT_HTTP": RunCorruptHttp,}
+var ATTACKS_STRATEGY = map[string](func(endpointConfig EndpointConfig, attackConfig AttackConfig, responseChannel chan Response) error){"HTTP_SPAM": RunHttpSpam,"CORRUPT_HTTP": RunCorruptHttp,"RANDOM_RABBIT_JSON": RunRandomRabbitJson}
 
 func main() {
 	config := GetConfigFromCli()
@@ -24,7 +24,7 @@ func wakeTheMonkey(config *Config) {
 func listenForResponses(responseChannel chan Response) {
 	for {
 		response := <- responseChannel
-		fmt.Printf("Response found. Passed = %v Report = %s\n", response.Passed, response.Report)
+		fmt.Printf("Response found. Passed = %v | Report = %s | Attack = %s\n", response.Passed, response.Report, response.AttackConfig.Type)
 	}
 }
 

@@ -9,6 +9,7 @@ import (
 type Response struct {
   Passed bool
   Report string
+  AttackConfig AttackConfig
 }
 
 func checkHttpResponse(httpResponse *http.Response, config AttackConfig) (bool, string) {
@@ -53,6 +54,10 @@ func dispatchConcurrentHttpRequests(concurrentCount int, endpoint string, c chan
 func collectConcurrentHttpResponses(responses []*http.Response, c chan *http.Response, expectedCount int) []*http.Response {
   for len(responses) < (expectedCount) {
     responses = readResponseFromChannel(responses, c)
+
+    if responses == nil {
+      return nil
+    }
   }
 
   return responses
@@ -60,6 +65,11 @@ func collectConcurrentHttpResponses(responses []*http.Response, c chan *http.Res
 
 func readResponseFromChannel(responses []*http.Response, c chan *http.Response) []*http.Response {
   response := <- c
+
+  if response == nil {
+    return nil
+  }
+
   defer response.Body.Close()
   return append(responses, response)
 }
@@ -78,14 +88,19 @@ func RunHttpSpam(endpointConfig EndpointConfig, attackConfig AttackConfig, respo
   dispatchConcurrentHttpRequests(NUM_OF_CONCURRENTS, endpoint, c, MESSAGES_PER_CONCURRENT)
   collectConcurrentHttpResponses(responses, c, NUM_OF_CONCURRENTS * MESSAGES_PER_CONCURRENT)
 
-  passed, reason := checkHttpResponses(responses, attackConfig)
-
-  if !passed {
-    responseChannel <- Response{Passed: false, Report: fmt.Sprintf("Failure during HTTP Spam. %s", reason)}
+  if len(responses) == 0 {
+    responseChannel <- Response{AttackConfig: attackConfig, Passed: false, Report: fmt.Sprintf("Error occurred during HTTP Spam.")}
     return nil
   }
 
-  responseChannel <- Response{Passed: true}
+  passed, reason := checkHttpResponses(responses, attackConfig)
+
+  if !passed {
+    responseChannel <- Response{AttackConfig: attackConfig, Passed: false, Report: fmt.Sprintf("Failure during HTTP Spam. %s", reason)}
+    return nil
+  }
+
+  responseChannel <- Response{AttackConfig: attackConfig, Passed: true}
   return nil
 }
 
@@ -93,14 +108,26 @@ func RunCorruptHttp(endpointConfig EndpointConfig, attackConfig AttackConfig, re
   fmt.Printf("Running Corrupt HTTP against %s\n", endpointConfig.Name)
   c := make(chan string)
   endpoint := BuildTcpUrl(endpointConfig.Host, endpointConfig.Port, endpointConfig.Path)
+
   go SendCorruptHttpData(endpoint, c)
 
   rawResponse := <- c
 
-  if !strings.Contains(rawResponse, attackConfig.ExpectedStatus) {
-    responseChannel <- Response{Passed: false, Report: fmt.Sprintf("Failure during Corrupt HTTP. Expected Status = %s | Actual Status = %s", attackConfig.ExpectedStatus, rawResponse)}
+  if rawResponse == "" {
+    responseChannel <- Response{AttackConfig: attackConfig, Passed: false, Report: fmt.Sprintf("Error occurred during corrupt HTTP attack", attackConfig.ExpectedStatus, rawResponse)}
+    return nil
   }
 
-  responseChannel <- Response{Passed: true, Report: fmt.Sprintf("Corrupt HTTP Test passed for endpoint %s", endpointConfig.Name)}
+  if !strings.Contains(rawResponse, attackConfig.ExpectedStatus) {
+    responseChannel <- Response{AttackConfig: attackConfig, Passed: false, Report: fmt.Sprintf("Failure during Corrupt HTTP. Expected Status = %s | Actual Status = %s", attackConfig.ExpectedStatus, rawResponse)}
+  }
+
+  responseChannel <- Response{AttackConfig: attackConfig, Passed: true, Report: fmt.Sprintf("Corrupt HTTP Test passed for endpoint %s", endpointConfig.Name)}
+  return nil
+}
+
+func RunRandomRabbitJson(endpointConfig EndpointConfig, attackConfig AttackConfig, responseChannel chan Response) error {
+  fmt.Printf("Running Random Rabbit JSON Attack against %s\n", endpointConfig.Name)
+  responseChannel <- Response{AttackConfig: attackConfig, Passed: true, Report: fmt.Sprintf("Random JSON to Rabbit MQ passed for endpoint %s", endpointConfig.Name)}
   return nil
 }
