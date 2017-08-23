@@ -1,5 +1,7 @@
 # Fuzz Monkey
 
+![Build Status](https://travis-ci.org/ChrisCooney/fuzz-monkey.svg?branch=master "Build Status")
+
 Fuzz Monkey is a bit like chaos monkey only with more fur and instead of tearing
 down infrastructure like some kind of crazed baboon in a shoe shop, it carefully
 and surgically flings its poop at specific http endpoints. It ain't pretty,
