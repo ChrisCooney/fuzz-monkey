@@ -1,7 +1,7 @@
 {
   "endpoints": [
     {
-      "name": "Chris",
+      "name": "QA List orders Endpoint",
       "host": "localhost",
       "port": "5000",
       "path": "/orders/1",
@@ -15,7 +15,7 @@
       ]
     },
     {
-      "name": "Dave",
+      "name": "Dev Order Update Endpoint",
       "host": "localhost",
       "port": "5000",
       "path": "/orders/2",
@@ -27,8 +27,9 @@
           "type": "HTTP_SPAM",
           "maxResponseTime": 5000,
           "expectedStatus": "200",
-          "concurrents": 20,
-          "messagesPerConcurrent": 100
+          "concurrents": 10,
+          "messagesPerConcurrent": 20,
+          "method": "GET"
         }
       ]
     }

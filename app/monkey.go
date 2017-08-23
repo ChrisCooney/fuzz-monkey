@@ -25,7 +25,13 @@ func wakeTheMonkey(config *Config) {
 func listenForResponses(responseChannel chan Response) {
 	for {
 		response := <- responseChannel
-		fmt.Printf("Response found. Passed = %v | Report = %s | Attack = %s\n", response.Passed, response.Report, response.AttackConfig.Type)
+
+		if response.Passed {
+			fmt.Printf("✅ Attack %s Passed ✅\n", response.AttackConfig.Type)
+		} else {
+			fmt.Printf("❌ Attack %s Failed ❌\n", response.AttackConfig.Type)
+			fmt.Printf("❌ Reason: %s ❌\n", response.Report)
+		}
 	}
 }
 

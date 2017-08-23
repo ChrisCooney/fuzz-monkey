@@ -17,16 +17,19 @@ func BuildNetworkPath(protocol string, host string, port string, path string) st
   return fmt.Sprintf("%s://%s:%s%s", protocol, host, port, path)
 }
 
-func SendRandomHttpRequest(endpoint string, c chan *http.Response) (*http.Response, error) {
+func SendHttpRequest(endpoint string, c chan *http.Response, method string) (*http.Response, error) {
   client := &http.Client{}
-  method := getRandomRequestMethod()
-
   request, _ := http.NewRequest(method, endpoint, bytes.NewBufferString("hello"))
 
   response, _ := client.Do(request)
 
   c <- response
   return response, nil
+}
+
+func SendRandomHttpRequest(endpoint string, c chan *http.Response) (*http.Response, error) {
+  method := getRandomRequestMethod()
+  return SendHttpRequest(endpoint, c, method)
 }
 
 var MAX_JUNK_LENGTH = 100
