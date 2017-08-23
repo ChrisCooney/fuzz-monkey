@@ -22,7 +22,6 @@ type EndpointConfig struct {
 
 type AttackConfig struct {
   Type string `json:"type"`
-  MaxResponseTime int `json:"maxResponseTime"`
   ExpectedStatus string `json:"expectedStatus"`
   Concurrents int `json:"concurrents"`
   MessagesPerConcurrent int `json:"messagesPerConcurrent"`

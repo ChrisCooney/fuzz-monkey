@@ -20,8 +20,6 @@ func checkHttpResponse(httpResponse *http.Response, config AttackConfig) (bool, 
     return false, reason, config.ExpectedStatus, httpResponse.Status
   }
 
-  /* TODO: Check response time against max response time */
-
   return true, "", "", ""
 }
 
