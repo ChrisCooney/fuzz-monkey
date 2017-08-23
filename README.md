@@ -1,7 +1,7 @@
 # Fuzz Monkey
 
 ![Build Status](https://travis-ci.org/ChrisCooney/fuzz-monkey.svg?branch=master "Build Status")
-[![Coverage Status](https://coveralls.io/repos/github/ChrisCooney/fuzz-monkey/badge.svg?branch=master)](https://coveralls.io/github/ChrisCooney/fuzz-monkey?branch=master)
+[![codecov](https://codecov.io/gh/ChrisCooney/fuzz-monkey/branch/master/graph/badge.svg)](https://codecov.io/gh/ChrisCooney/fuzz-monkey)
 
 Fuzz Monkey is a bit like chaos monkey only with more fur and instead of tearing
 down infrastructure like some kind of crazed baboon in a shoe shop, it carefully
