@@ -31,7 +31,9 @@
         {
           "type": "HTTP_SPAM",
           "maxResponseTime": 5000,
-          "expectedStatus": "200"
+          "expectedStatus": "200",
+          "concurrents": 20,
+          "messagesPerConcurrent": 100
         }
       ]
     }

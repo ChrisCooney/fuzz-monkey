@@ -24,6 +24,8 @@ type AttackConfig struct {
   Type string `json:"type"`
   MaxResponseTime int `json:"maxResponseTime"`
   ExpectedStatus string `json:"expectedStatus"`
+  Concurrents int `json:"concurrent"`
+  MessagesPerConcurrent int `json:"messagesPerConcurrent"`
 }
 
 func GetConfig(configPath string) (*Config) {

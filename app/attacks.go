@@ -74,9 +74,6 @@ func readResponseFromChannel(responses []*http.Response, c chan *http.Response) 
   return append(responses, response)
 }
 
-var NUM_OF_CONCURRENTS = 20
-var MESSAGES_PER_CONCURRENT = 100
-
 func RunHttpSpam(endpointConfig EndpointConfig, attackConfig AttackConfig, responseChannel chan Response) error {
   fmt.Printf("🔥 Running HTTP Spam against %s 🔥\n", endpointConfig.Name)
 
@@ -85,8 +82,10 @@ func RunHttpSpam(endpointConfig EndpointConfig, attackConfig AttackConfig, respo
 
   endpoint := BuildNetworkPath(endpointConfig.Protocol, endpointConfig.Host, endpointConfig.Port, endpointConfig.Path)
 
-  dispatchConcurrentHttpRequests(NUM_OF_CONCURRENTS, endpoint, c, MESSAGES_PER_CONCURRENT)
-  collectConcurrentHttpResponses(responses, c, NUM_OF_CONCURRENTS * MESSAGES_PER_CONCURRENT)
+  messageCount := attackConfig.Concurrents * attackConfig.MessagesPerConcurrent
+
+  dispatchConcurrentHttpRequests(attackConfig.Concurrents, endpoint, c, attackConfig.MessagesPerConcurrent)
+  collectConcurrentHttpResponses(responses, c, messageCount)
 
   if len(responses) == 0 {
     responseChannel <- Response{AttackConfig: attackConfig, Passed: false, Report: fmt.Sprintf("Error occurred during HTTP Spam.")}
@@ -114,12 +113,12 @@ func RunCorruptHttp(endpointConfig EndpointConfig, attackConfig AttackConfig, re
   rawResponse := <- c
 
   if rawResponse == "" {
-    responseChannel <- Response{AttackConfig: attackConfig, Passed: false, Report: fmt.Sprintf("Error occurred during corrupt HTTP attack", attackConfig.ExpectedStatus, rawResponse)}
+    responseChannel <- Response{AttackConfig: attackConfig, Passed: false, Report: fmt.Sprintf("Error occurred during corrupt HTTP attack. Expected valid response but got empty String.", rawResponse)}
     return nil
   }
-
+  
   if !strings.Contains(rawResponse, attackConfig.ExpectedStatus) {
-    responseChannel <- Response{AttackConfig: attackConfig, Passed: false, Report: fmt.Sprintf("Failure during Corrupt HTTP. Expected Status = %s | Actual Status = %s", attackConfig.ExpectedStatus, rawResponse)}
+    responseChannel <- Response{AttackConfig: attackConfig, Passed: false, Report: fmt.Sprintf("Failure during Corrupt HTTP. Expected Status = %s | Actual Response = %s", attackConfig.ExpectedStatus, rawResponse)}
   }
 
   responseChannel <- Response{AttackConfig: attackConfig, Passed: true, Report: fmt.Sprintf("Corrupt HTTP Test passed for endpoint %s", endpointConfig.Name)}
