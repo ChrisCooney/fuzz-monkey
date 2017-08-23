@@ -55,7 +55,7 @@ Each endpoint must have at least one attack registered against it. An attack req
 field and the config parameters for that type of attack. The current attack types are:
 
 | Attack Type | Description  |
-| -------------:|-----:|
+| -------------|-----|
 | HTTP_SPAM     | Goes to town on an endpoint with randomly selected HTTP requests. |
 | CORRUPT_HTTP  | Opens a TCP connection and makes corrupt HTTP requests at the endpoint. |
 
