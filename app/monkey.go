@@ -8,7 +8,7 @@ import (
 
 var MAX_TIME_BETWEEN_ATTACKS = 60
 
-var ATTACKS_STRATEGY = map[string](func(endpointConfig EndpointConfig, attackConfig AttackConfig, responseChannel chan Response) error){"HTTP_SPAM": RunHttpSpam,"CORRUPT_HTTP": RunCorruptHttp,"RANDOM_RABBIT_JSON": RunRandomRabbitJson}
+var ATTACKS_STRATEGY = map[string](func(endpointConfig EndpointConfig, attackConfig AttackConfig, responseChannel chan Response) error){"HTTP_SPAM": RunHttpSpam,"CORRUPT_HTTP": RunCorruptHttp}
 
 func main() {
 	config := GetConfigFromCli()

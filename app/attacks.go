@@ -116,17 +116,11 @@ func RunCorruptHttp(endpointConfig EndpointConfig, attackConfig AttackConfig, re
     responseChannel <- Response{AttackConfig: attackConfig, Passed: false, Report: fmt.Sprintf("Error occurred during corrupt HTTP attack. Expected valid response but got empty String.", rawResponse)}
     return nil
   }
-  
+
   if !strings.Contains(rawResponse, attackConfig.ExpectedStatus) {
     responseChannel <- Response{AttackConfig: attackConfig, Passed: false, Report: fmt.Sprintf("Failure during Corrupt HTTP. Expected Status = %s | Actual Response = %s", attackConfig.ExpectedStatus, rawResponse)}
   }
 
   responseChannel <- Response{AttackConfig: attackConfig, Passed: true, Report: fmt.Sprintf("Corrupt HTTP Test passed for endpoint %s", endpointConfig.Name)}
-  return nil
-}
-
-func RunRandomRabbitJson(endpointConfig EndpointConfig, attackConfig AttackConfig, responseChannel chan Response) error {
-  fmt.Printf("🔥 Running Random Rabbit JSON Attack against %s 🔥\n", endpointConfig.Name)
-  responseChannel <- Response{AttackConfig: attackConfig, Passed: true, Report: fmt.Sprintf("Random JSON to Rabbit MQ passed for endpoint %s", endpointConfig.Name)}
   return nil
 }
