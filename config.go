@@ -35,6 +35,11 @@ func GetConfig(configPath string) (*Config) {
 }
 
 func loadConfigFile(configPath string) ([]byte) {
+
+  if configPath == "" {
+    configPath = "fuzz-monkey.json"
+  }
+
   file, err := ioutil.ReadFile(configPath)
 
   CheckError(err)

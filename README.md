@@ -19,11 +19,14 @@ go build -o monkey .
 
 The Monkey is a chaotic but loyal warrior. You tell it where to fling and by the grace
 of God, it'll fling. The Monkey's instructions come in the form of a JSON file. When
-you send the Monkey off into battle, you can target it's wrath like this:
+you send the Monkey off into battle, you can either target it's wrath like this:
 
 ```
 ./monkey path/to/config.json
 ```
+
+or you can simply run the script and it will automatically root around for a file named
+_fuzz-monkey.json_.
 
 The Configuration file has a specific format, otherwise the Monkey gets confused. In the root
 of the config file is the `endpoints` field. This specifies the targets for the monkey to
