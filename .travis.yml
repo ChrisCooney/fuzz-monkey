@@ -1,0 +1,10 @@
+language: go
+
+go:
+- 1.8.x
+
+install:
+  - go get gopkg.in/alecthomas/kingpin.v2
+  - go install
+
+script: go test ./..
