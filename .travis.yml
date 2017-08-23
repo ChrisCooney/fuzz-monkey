@@ -8,7 +8,7 @@ install:
 - go get github.com/mattn/goveralls
 - go install
 
-script: go test -v -covermode=count -coverprofile=coverage.out $HOME/gopath/bin/goveralls
+script: go test -v -covermode=count $HOME/gopath/bin/goveralls
   -coverprofile=coverage.out -service=travis-ci -repotoken $COVERALLS_TOKEN
 
 after_success:
