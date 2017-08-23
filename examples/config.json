@@ -24,6 +24,7 @@
       "host": "localhost",
       "port": "5000",
       "path": "/orders/2",
+      "protocol": "http",
       "maxResponseTime": 5000,
       "expectedStatus": "200",
       "attacks": [

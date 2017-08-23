@@ -5,7 +5,7 @@ import (
 )
 
 var (
-	configPath = kingpin.Arg("config", "Fuzz Monkey application configuration JSON file").Required().String()
+	configPath = kingpin.Arg("config", "📚 Fuzz Monkey application configuration JSON file 📚").Required().String()
 )
 
 func GetConfigFromCli() (*Config) {

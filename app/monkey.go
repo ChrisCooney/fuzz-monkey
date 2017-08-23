@@ -16,6 +16,7 @@ func main() {
 }
 
 func wakeTheMonkey(config *Config) {
+	fmt.Println("🐒 Waking the Monkey 🐒")
 	responseChannel := make(chan Response)
 	setupTargets(config, responseChannel)
 	listenForResponses(responseChannel)
@@ -30,7 +31,7 @@ func listenForResponses(responseChannel chan Response) {
 
 func setupTargets(config *Config, responseChannel chan Response) {
 	for _,endpoint := range config.Endpoints {
-		fmt.Printf("Setting up %s\n", endpoint.Name)
+		fmt.Printf("🎯 Setting up %s 🎯\n", endpoint.Name)
 		setupAttackThreads(endpoint, responseChannel)
 	}
 }

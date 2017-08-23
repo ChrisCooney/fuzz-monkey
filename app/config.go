@@ -28,7 +28,6 @@ type AttackConfig struct {
 
 func GetConfig(configPath string) (*Config) {
   fileContents := loadConfigFile(configPath)
-  fmt.Printf("%v", mapFileToObject(fileContents))
   return mapFileToObject(fileContents)
 }
 
@@ -43,11 +42,11 @@ func loadConfigFile(configPath string) ([]byte) {
 func isValidConfig(config *Config) (bool, error) {
   for i,endpoint := range config.Endpoints {
     if endpoint.Name == "" {
-      return false, errors.New(fmt.Sprintf("Endpoint name can not be empty for endpoint #%d", i + 1))
+      return false, errors.New(fmt.Sprintf("⚠️ Endpoint name can not be empty for endpoint #%d ⚠️", i + 1))
     }
 
     if endpoint.Host == "" {
-      return false, errors.New(fmt.Sprintf("Host can not be null for endpoint with name %s", endpoint.Name))
+      return false, errors.New(fmt.Sprintf("⚠️ Host can not be null for endpoint with name %s ⚠️", endpoint.Name))
     }
   }
 

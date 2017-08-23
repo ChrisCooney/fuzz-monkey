@@ -78,7 +78,7 @@ var NUM_OF_CONCURRENTS = 20
 var MESSAGES_PER_CONCURRENT = 100
 
 func RunHttpSpam(endpointConfig EndpointConfig, attackConfig AttackConfig, responseChannel chan Response) error {
-  fmt.Printf("Running HTTP Spam against %s\n", endpointConfig.Name)
+  fmt.Printf("🔥 Running HTTP Spam against %s 🔥\n", endpointConfig.Name)
 
   responses := []*http.Response{}
   c := make(chan *http.Response)
@@ -105,7 +105,7 @@ func RunHttpSpam(endpointConfig EndpointConfig, attackConfig AttackConfig, respo
 }
 
 func RunCorruptHttp(endpointConfig EndpointConfig, attackConfig AttackConfig, responseChannel chan Response) error {
-  fmt.Printf("Running Corrupt HTTP against %s\n", endpointConfig.Name)
+  fmt.Printf("🔥 Running Corrupt HTTP against %s 🔥\n", endpointConfig.Name)
   c := make(chan string)
   endpoint := BuildNetworkPath(endpointConfig.Protocol, endpointConfig.Host, endpointConfig.Port, endpointConfig.Path)
 
@@ -127,7 +127,7 @@ func RunCorruptHttp(endpointConfig EndpointConfig, attackConfig AttackConfig, re
 }
 
 func RunRandomRabbitJson(endpointConfig EndpointConfig, attackConfig AttackConfig, responseChannel chan Response) error {
-  fmt.Printf("Running Random Rabbit JSON Attack against %s\n", endpointConfig.Name)
+  fmt.Printf("🔥 Running Random Rabbit JSON Attack against %s 🔥\n", endpointConfig.Name)
   responseChannel <- Response{AttackConfig: attackConfig, Passed: true, Report: fmt.Sprintf("Random JSON to Rabbit MQ passed for endpoint %s", endpointConfig.Name)}
   return nil
 }
