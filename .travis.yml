@@ -1,10 +1,19 @@
 language: go
-
 go:
 - 1.8.x
 
 install:
-  - go get gopkg.in/alecthomas/kingpin.v2
-  - go install
+- go get gopkg.in/alecthomas/kingpin.v2
+- go get golang.org/x/tools/cmd/cover
+- go get github.com/mattn/goveralls
+- go install
 
-script: go test ./
+script: go test -v -covermode=count -coverprofile=coverage.out $HOME/gopath/bin/goveralls
+  -coverprofile=coverage.out -service=travis-ci -repotoken $COVERALLS_TOKEN
+
+after_success:
+- bash <(curl -s https://codecov.io/bash)
+
+env:
+  global:
+    secure: AaV3TWY0jv0QqQZ1a3W1Yx97LIllYoocl5PoblHfBJaLoEWhGRTIYRTDBT3Gr3Jgk60inYGBLkNLmAKL/Qhe4oao2Axv4pNhhnYYBx3z5X70GFPqOIJzsj2gANpRmibTZ7Ftg/jEwf6XkMyf60zMduGg045VDpDB3a7NOeYTBBFhvSgtrBEbvAKm5TaPEPdlfT+9pXFzVCdO0cp33fCHdbEAS7SLDKLkJfENVEZ/amaZOzrbeEzHAQ88AzmsNVvQyucroCEesJQaFRB8qBuE+zIuobfbqWjFq2ElSTDiMSRtP+saDhnCXiQ62WkVCCp1pFXf5L6E/f5jwaH2cCYJwFYg7bNm2cW6GfDoWlwg8duNwydQxvLYyKeXS/xFKvG0G3mk/Oco0STqLuRY7I+2fYfzFAHVmkuHshHHeMytD8Gfy/NxYSLB4tLniWFznTI2ITRYbNQVgYq/zSYmKS0DzfHoOJDF8W/6YsBmVZL48vfkGTuD0NdAavqk8pudyt4t9hwIkilM2L3ptpIw9hLeKf0QLPTeQgvOl+2YTwuR5pCdYbioD2ggp8oIcFfLYbmVftW63f8YAXCTQ0m/zOOSMOTOdfHifqUv8akjI8beNS89KMlstUYs4xRjEaUAyTktr/H1d5PCT2XLdGa+IX/wKucEBG37yoYgd1qncC7vd4U=
