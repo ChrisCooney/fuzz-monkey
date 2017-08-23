@@ -83,7 +83,7 @@ func RunHttpSpam(endpointConfig EndpointConfig, attackConfig AttackConfig, respo
   responses := []*http.Response{}
   c := make(chan *http.Response)
 
-  endpoint := BuildHttpUrl(endpointConfig.Host, endpointConfig.Port, endpointConfig.Path)
+  endpoint := BuildNetworkPath(endpointConfig.Protocol, endpointConfig.Host, endpointConfig.Port, endpointConfig.Path)
 
   dispatchConcurrentHttpRequests(NUM_OF_CONCURRENTS, endpoint, c, MESSAGES_PER_CONCURRENT)
   collectConcurrentHttpResponses(responses, c, NUM_OF_CONCURRENTS * MESSAGES_PER_CONCURRENT)
@@ -107,7 +107,7 @@ func RunHttpSpam(endpointConfig EndpointConfig, attackConfig AttackConfig, respo
 func RunCorruptHttp(endpointConfig EndpointConfig, attackConfig AttackConfig, responseChannel chan Response) error {
   fmt.Printf("Running Corrupt HTTP against %s\n", endpointConfig.Name)
   c := make(chan string)
-  endpoint := BuildTcpUrl(endpointConfig.Host, endpointConfig.Port, endpointConfig.Path)
+  endpoint := BuildNetworkPath(endpointConfig.Protocol, endpointConfig.Host, endpointConfig.Port, endpointConfig.Path)
 
   go SendCorruptHttpData(endpoint, c)
 

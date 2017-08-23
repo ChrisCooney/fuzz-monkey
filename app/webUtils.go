@@ -9,15 +9,11 @@ import (
   "bufio"
 )
 
-func BuildHttpUrl(host string, port string, path string) string {
-  return buildNetworkPath("http", host, port, path)
-}
-
 func BuildTcpUrl(host string, port string, path string) string {
-  return fmt.Sprintf("%s:%s", host, port)
+  return fmt.Sprintf("%s:%s%s", host, port, path)
 }
 
-func buildNetworkPath(protocol string, host string, port string, path string) string {
+func BuildNetworkPath(protocol string, host string, port string, path string) string {
   return fmt.Sprintf("%s://%s:%s%s", protocol, host, port, path)
 }
 

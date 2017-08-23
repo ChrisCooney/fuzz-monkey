@@ -16,6 +16,7 @@ type EndpointConfig struct {
   Host string `json:"host"`
   Port string `json:"port"`
   Path string `json:"path"`
+  Protocol string `json:"protocol"`
   Attacks []AttackConfig `json:"attacks"`
 }
 

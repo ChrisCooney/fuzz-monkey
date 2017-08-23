@@ -5,6 +5,7 @@
       "host": "localhost",
       "port": "5000",
       "path": "/orders/1",
+      "protocol": "http",
       "attacks": [
         {
           "type": "CORRUPT_HTTP",
