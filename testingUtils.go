@@ -1,6 +1,6 @@
 package main
 
-func CreateTestConfiguration(expectedStatus string) (EndpointConfig, AttackConfig) {
+func CreateTestEndpointAndAttackConfiguration(expectedStatus string) (EndpointConfig, AttackConfig) {
   endpoint := EndpointConfig{Name:"Test Endpoint", Protocol:"http",Host:"localhost",Port:"8080",Path:"/my-endpoint"}
   attack := AttackConfig{Type:"HTTP_SPAM",Concurrents:1,MessagesPerConcurrent:1,ExpectedStatus:expectedStatus,Method:"GET"}
 
