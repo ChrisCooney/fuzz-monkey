@@ -12,7 +12,7 @@ func CreateTestEndpointAndAttackConfiguration(expectedStatus string) (EndpointCo
 func CreateFullTestConfiguration() Config {
   config := Config{}
 
-  endpoint, attack := CreateTestConfiguration("200")
+  endpoint, attack := CreateTestEndpointAndAttackConfiguration("200")
 
   config.Endpoints = append(config.Endpoints, endpoint)
   config.Endpoints[0].Attacks = append(config.Endpoints[0].Attacks, attack)
