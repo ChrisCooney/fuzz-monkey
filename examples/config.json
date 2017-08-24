@@ -9,7 +9,6 @@
       "attacks": [
         {
           "type": "CORRUPT_HTTP",
-          "maxResponseTime": 5000,
           "expectedStatus": "400"
         }
       ]
@@ -20,12 +19,9 @@
       "port": "5000",
       "path": "/orders/2",
       "protocol": "http",
-      "maxResponseTime": 5000,
-      "expectedStatus": "200",
       "attacks": [
         {
           "type": "HTTP_SPAM",
-          "maxResponseTime": 5000,
           "expectedStatus": "200",
           "concurrents": 10,
           "messagesPerConcurrent": 20,
