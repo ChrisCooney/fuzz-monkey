@@ -13,7 +13,7 @@ func TestRunHttpSpam(t *testing.T) {
     defer httpmock.DeactivateAndReset()
     c := createResponseChannel()
 
-    endpoint, attack := createConfiguration("200")
+    endpoint, attack := CreateTestConfiguration("200")
 
     go RunHttpSpam(endpoint, attack, c)
 
@@ -23,7 +23,7 @@ func TestRunHttpSpam(t *testing.T) {
       t.Error("Valid config provided to HTTP Spam. HTTP SPAM did not return a passing report.")
     }
 
-    endpoint, attack = createConfiguration("404")
+    endpoint, attack = CreateTestConfiguration("404")
 
     go RunHttpSpam(endpoint, attack, c)
 
@@ -39,7 +39,7 @@ func TestRunCorruptHttp(t *testing.T) {
   t.Run("Test run Corrupt HTTP correctly reports on endpoints", func(t *testing.T) {
     go createMockTcpServer()
     c := createResponseChannel()
-    endpoint, attack := createConfiguration("200")
+    endpoint, attack := CreateTestConfiguration("200")
 
     go RunCorruptHttp(endpoint, attack, c)
 
@@ -49,7 +49,7 @@ func TestRunCorruptHttp(t *testing.T) {
       t.Errorf("Valid config provided to corrupt HTTP. Corrupt HTTP did not return a passing report. %v", response)
     }
 
-    endpoint, attack = createConfiguration("404")
+    endpoint, attack = CreateTestConfiguration("404")
 
     go RunCorruptHttp(endpoint, attack, c)
 
@@ -88,13 +88,6 @@ func createMockTcpServer() {
           count ++
         }
     }
-}
-
-func createConfiguration(responseStatus string) (EndpointConfig, AttackConfig) {
-  endpoint := EndpointConfig{Name:"Test Endpoint", Protocol:"http",Host:"localhost",Port:"8080",Path:"/my-endpoint"}
-  attack := AttackConfig{Type:"HTTP_SPAM",Concurrents:1,MessagesPerConcurrent:1,ExpectedStatus:responseStatus,Method:"GET"}
-
-  return endpoint, attack
 }
 
 func createResponseChannel() (chan Response) {

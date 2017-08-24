@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"math/rand"
 	"time"
+	"errors"
 )
 
 var MAX_TIME_BETWEEN_ATTACKS = 60
@@ -18,7 +19,7 @@ func main() {
 func wakeTheMonkey(config *Config) {
 	fmt.Println("🐒 Waking the Monkey 🐒")
 	responseChannel := make(chan Response)
-	setupTargets(config, responseChannel)
+	SetupTargets(config, responseChannel)
 	listenForResponses(responseChannel)
 }
 
@@ -35,7 +36,7 @@ func listenForResponses(responseChannel chan Response) {
 	}
 }
 
-func setupTargets(config *Config, responseChannel chan Response) {
+func SetupTargets(config *Config, responseChannel chan Response) {
 	for _,endpoint := range config.Endpoints {
 		fmt.Printf("🎯 Setting up %s 🎯\n", endpoint.Name)
 		setupAttackThreads(endpoint, responseChannel)
@@ -50,7 +51,13 @@ func setupAttackThreads(endpoint EndpointConfig, responseChannel chan Response) 
 
 func beginHarassment(endpoint EndpointConfig, attack AttackConfig, responseChannel chan Response) {
 	for {
-		go ATTACKS_STRATEGY[attack.Type](endpoint, attack, responseChannel)
+		attackFunc, present := ATTACKS_STRATEGY[attack.Type]
+
+		if !present {
+			panic(errors.New(fmt.Sprintf("Unknown attack type %s", attack.Type)))
+		}
+
+		go attackFunc(endpoint, attack, responseChannel)
 		pauseForRandomDuration()
 	}
 }
