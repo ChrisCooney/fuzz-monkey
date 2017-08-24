@@ -22,7 +22,7 @@ func BuildNetworkPath(protocol string, host string, port string, path string) st
   return fmt.Sprintf("%s://%s:%s%s", protocol, host, port, path)
 }
 
-func SendHttpRequest(endpoint string, c chan *http.Response, method string) (*http.Response, error) {
+func SendHTTPRequest(endpoint string, c chan *http.Response, method string) (*http.Response, error) {
   client := &http.Client{}
   request, _ := http.NewRequest(method, endpoint, bytes.NewBufferString("hello"))
 
@@ -32,14 +32,14 @@ func SendHttpRequest(endpoint string, c chan *http.Response, method string) (*ht
   return response, nil
 }
 
-func SendRandomHttpRequest(endpoint string, c chan *http.Response) (*http.Response, error) {
+func SendRandomHTTPRequest(endpoint string, c chan *http.Response) (*http.Response, error) {
   method := getRandomRequestMethod()
-  return SendHttpRequest(endpoint, c, method)
+  return SendHTTPRequest(endpoint, c, method)
 }
 
 var MAX_JUNK_LENGTH = 100
 
-func SendCorruptHttpData(endpoint string, c chan string) error {
+func SendCorruptHTTPData(endpoint string, c chan string) error {
   conn, err := net.Dial("tcp", endpoint)
 
   if err != nil {

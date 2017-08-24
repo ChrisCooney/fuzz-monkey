@@ -7,15 +7,15 @@ import (
   "fmt"
 )
 
-func TestRunHttpSpam(t *testing.T) {
+func TestRunHTTPSpam(t *testing.T) {
   t.Run("Test run HTTP spam correctly reports on endpoints", func(t *testing.T) {
-    createMockHttpServer()
+    createMockHTTPServer()
     defer httpmock.DeactivateAndReset()
     c := createResponseChannel()
 
     endpoint, attack := CreateTestEndpointAndAttackConfiguration("200")
 
-    go RunHttpSpam(endpoint, attack, c)
+    go RunHTTPSpam(endpoint, attack, c)
 
     response := <- c
 
@@ -25,7 +25,7 @@ func TestRunHttpSpam(t *testing.T) {
 
     endpoint, attack = CreateTestEndpointAndAttackConfiguration("404")
 
-    go RunHttpSpam(endpoint, attack, c)
+    go RunHTTPSpam(endpoint, attack, c)
 
     response = <- c
 
@@ -35,13 +35,13 @@ func TestRunHttpSpam(t *testing.T) {
   })
 }
 
-func TestRunCorruptHttp(t *testing.T) {
+func TestRunCorruptHTTP(t *testing.T) {
   t.Run("Test run Corrupt HTTP correctly reports on endpoints", func(t *testing.T) {
     go createMockTcpServer()
     c := createResponseChannel()
     endpoint, attack := CreateTestEndpointAndAttackConfiguration("200")
 
-    go RunCorruptHttp(endpoint, attack, c)
+    go RunCorruptHTTP(endpoint, attack, c)
 
     response := <- c
 
@@ -51,7 +51,7 @@ func TestRunCorruptHttp(t *testing.T) {
 
     endpoint, attack = CreateTestEndpointAndAttackConfiguration("404")
 
-    go RunCorruptHttp(endpoint, attack, c)
+    go RunCorruptHTTP(endpoint, attack, c)
 
     response = <- c
 
@@ -61,7 +61,7 @@ func TestRunCorruptHttp(t *testing.T) {
   })
 }
 
-func createMockHttpServer() {
+func createMockHTTPServer() {
   httpmock.Activate()
 
   httpmock.RegisterResponder("GET", "http://localhost:8080/my-endpoint",
@@ -81,11 +81,11 @@ func createMockTcpServer() {
         fmt.Println("Mock TCP Server returning 200")
         conn.Write([]byte("MOCK RESPONSE: 200\n"))
         defer conn.Close()
+        
+        count ++
 
-        if(count == 1) {
+        if(count == 2) {
           return
-        } else {
-          count ++
         }
     }
 }

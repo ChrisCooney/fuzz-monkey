@@ -9,7 +9,7 @@ import (
 
 var MAX_TIME_BETWEEN_ATTACKS = 60
 
-var ATTACKS_STRATEGY = map[string](func(endpointConfig EndpointConfig, attackConfig AttackConfig, responseChannel chan Response) error){"HTTP_SPAM": RunHttpSpam,"CORRUPT_HTTP": RunCorruptHttp}
+var ATTACKS_STRATEGY = map[string](func(endpointConfig EndpointConfig, attackConfig AttackConfig, responseChannel chan Response) error){"HTTP_SPAM": RunHTTPSpam,"CORRUPT_HTTP": RunCorruptHTTP}
 
 func main() {
 	config := GetConfigFromCli()
@@ -36,6 +36,7 @@ func listenForResponses(responseChannel chan Response) {
 	}
 }
 
+// Sets up the targets in the config file for attack.
 func SetupTargets(config *Config, responseChannel chan Response) {
 	for _,endpoint := range config.Endpoints {
 		fmt.Printf("🎯 Setting up %s 🎯\n", endpoint.Name)

@@ -14,7 +14,7 @@ type Response struct {
   AttackConfig AttackConfig
 }
 
-func checkHttpResponse(httpResponse *http.Response, config AttackConfig) (bool, string, string, string) {
+func checkHTTPResponse(httpResponse *http.Response, config AttackConfig) (bool, string, string, string) {
   if strings.Trim(httpResponse.Status, " ") != strings.Trim(config.ExpectedStatus, " ") {
     reason := fmt.Sprintf("Invalid status code of %s detected. Expected %s", httpResponse.Status, config.ExpectedStatus)
     return false, reason, config.ExpectedStatus, httpResponse.Status
@@ -23,14 +23,14 @@ func checkHttpResponse(httpResponse *http.Response, config AttackConfig) (bool, 
   return true, "", "", ""
 }
 
-func checkHttpResponses(httpResponses []*http.Response, config AttackConfig) (bool, string, string, string) {
+func checkHTTPResponses(httpResponses []*http.Response, config AttackConfig) (bool, string, string, string) {
   for _,httpResp := range httpResponses {
 
     if httpResp == nil {
       return false, "Error occurred during HTTP request", "A valid HTTP Response", "No HTTP Response"
     }
 
-    passed, reason, expected, actual := checkHttpResponse(httpResp, config)
+    passed, reason, expected, actual := checkHTTPResponse(httpResp, config)
 
     if !passed {
       return passed, reason, expected, actual
@@ -40,23 +40,23 @@ func checkHttpResponses(httpResponses []*http.Response, config AttackConfig) (bo
   return true, "", "", ""
 }
 
-func dispatchMultipleHttpRequests(endpoint string, c chan *http.Response, count int, method string) {
+func dispatchMultipleHTTPRequests(endpoint string, c chan *http.Response, count int, method string) {
   for i := 0; i < count; i++ {
     if method == "" {
-      SendRandomHttpRequest(endpoint, c)
+      SendRandomHTTPRequest(endpoint, c)
     } else {
-      SendHttpRequest(endpoint, c, method)
+      SendHTTPRequest(endpoint, c, method)
     }
   }
 }
 
-func dispatchConcurrentHttpRequests(concurrentCount int, endpoint string, c chan *http.Response, count int, method string) {
+func dispatchConcurrentHTTPRequests(concurrentCount int, endpoint string, c chan *http.Response, count int, method string) {
   for i:=0; i < concurrentCount; i++ {
-    go dispatchMultipleHttpRequests(endpoint, c, count, method)
+    go dispatchMultipleHTTPRequests(endpoint, c, count, method)
   }
 }
 
-func collectConcurrentHttpResponses(c chan *http.Response, expectedCount int) []*http.Response {
+func collectConcurrentHTTPResponses(c chan *http.Response, expectedCount int) []*http.Response {
   responses := []*http.Response{}
 
   for len(responses) < (expectedCount) {
@@ -81,7 +81,8 @@ func readResponseFromChannel(responses []*http.Response, c chan *http.Response) 
   return append(responses, response)
 }
 
-func RunHttpSpam(endpointConfig EndpointConfig, attackConfig AttackConfig, responseChannel chan Response) error {
+// Fires off the requested number of concurrent messages at an endpoint and tests response.
+func RunHTTPSpam(endpointConfig EndpointConfig, attackConfig AttackConfig, responseChannel chan Response) error {
   fmt.Printf("🔥 Running HTTP Spam against %s 🔥\n", endpointConfig.Name)
 
   c := make(chan *http.Response)
@@ -90,15 +91,15 @@ func RunHttpSpam(endpointConfig EndpointConfig, attackConfig AttackConfig, respo
 
   messageCount := attackConfig.Concurrents * attackConfig.MessagesPerConcurrent
 
-  dispatchConcurrentHttpRequests(attackConfig.Concurrents, endpoint, c, attackConfig.MessagesPerConcurrent, attackConfig.Method)
-  responses := collectConcurrentHttpResponses(c, messageCount)
+  dispatchConcurrentHTTPRequests(attackConfig.Concurrents, endpoint, c, attackConfig.MessagesPerConcurrent, attackConfig.Method)
+  responses := collectConcurrentHTTPResponses(c, messageCount)
 
   if len(responses) == 0 {
     responseChannel <- Response{AttackConfig: attackConfig, Passed: false, Report: "Error occurred during HTTP Spam."}
     return nil
   }
 
-  passed, reason, expected, actual := checkHttpResponses(responses, attackConfig)
+  passed, reason, expected, actual := checkHTTPResponses(responses, attackConfig)
 
   if !passed {
     responseChannel <- Response{Expected: expected, Actual: actual, AttackConfig: attackConfig, Passed: false, Report: fmt.Sprintf("Failure during HTTP Spam. %s", reason)}
@@ -109,12 +110,13 @@ func RunHttpSpam(endpointConfig EndpointConfig, attackConfig AttackConfig, respo
   return nil
 }
 
-func RunCorruptHttp(endpointConfig EndpointConfig, attackConfig AttackConfig, responseChannel chan Response) error {
+// Fires off a Corrupted HTTP request at the specific endpoint.
+func RunCorruptHTTP(endpointConfig EndpointConfig, attackConfig AttackConfig, responseChannel chan Response) error {
   fmt.Printf("🔥 Running Corrupt HTTP against %s 🔥\n", endpointConfig.Name)
   c := make(chan string)
   endpoint := BuildNetworkPath("", endpointConfig.Host, endpointConfig.Port, "")
 
-  go SendCorruptHttpData(endpoint, c)
+  go SendCorruptHTTPData(endpoint, c)
   rawResponse := <- c
 
   if rawResponse == "" {

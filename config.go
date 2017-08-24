@@ -3,14 +3,15 @@ package main
 import (
   "encoding/json"
   "io/ioutil"
-  "errors"
   "fmt"
 )
 
+// Object representation of config file provided by the user.
 type Config struct {
   Endpoints []EndpointConfig `json:"endpoints"`
 }
 
+// Configuration for a specific endpoint.
 type EndpointConfig struct {
   Name string `json:"name"`
   Host string `json:"host"`
@@ -20,6 +21,7 @@ type EndpointConfig struct {
   Attacks []AttackConfig `json:"attacks"`
 }
 
+// Configuration for a specific attack on an endpoint.
 type AttackConfig struct {
   Type string `json:"type"`
   ExpectedStatus string `json:"expectedStatus"`
@@ -49,25 +51,25 @@ func loadConfigFile(configPath string) ([]byte) {
 func IsValidConfig(config *Config) (bool, error) {
 
   if len(config.Endpoints) == 0 {
-    return false, errors.New(fmt.Sprintf("⚠️ Endpoints can not be empty. The monkey needs victims. ⚠️"))
+    return false, fmt.Errorf("⚠️ Endpoints can not be empty. The monkey needs victims. ⚠️")
   }
 
   for i,endpoint := range config.Endpoints {
     if endpoint.Name == "" {
-      return false, errors.New(fmt.Sprintf("⚠️ Endpoint name can not be empty for endpoint #%d. The monkey is like Arya Stark. It needs a name. ⚠️", i + 1))
+      return false, fmt.Errorf("⚠️ Endpoint name can not be empty for endpoint #%d. The monkey is like Arya Stark. It needs a name. ⚠️", i + 1)
     }
 
     if endpoint.Host == "" {
-      return false, errors.New(fmt.Sprintf("⚠️ Host can not be null for endpoint with name %s. The monkey needs an address to go after. ⚠️", endpoint.Name))
+      return false, fmt.Errorf("⚠️ Host can not be null for endpoint with name %s. The monkey needs an address to go after. ⚠️", endpoint.Name)
     }
 
     if len(endpoint.Attacks) == 0 {
-      return false, errors.New(fmt.Sprintf("⚠️ Endpoint must have attacks associated with it. The monkey kills all it sees. ⚠️"))
+      return false, fmt.Errorf("⚠️ Endpoint must have attacks associated with it. The monkey kills all it sees. ⚠️")
     }
 
     for j,attack := range endpoint.Attacks {
       if attack.Type == "" {
-        return false, errors.New(fmt.Sprintf("⚠️ Attack config #%d for endpoint %s needs a type. Future versions will interpret this as an all access pass for the monkey. ⚠️", endpoint.Name, j + 1))
+        return false, fmt.Errorf("⚠️ Attack config #%d for endpoint %s needs a type. Future versions will interpret this as an all access pass for the monkey. ⚠️", endpoint.Name, j + 1)
       }
     }
   }
