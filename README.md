@@ -82,12 +82,10 @@ For example, in your config, your attack might look something like:
       "attacks": [
         {
           "type": "CORRUPT_HTTP",
-          "maxResponseTime": 5000,
           "expectedStatus": "400"
         },
         {
           "type": "HTTP_SPAM",
-          "maxResponseTime": 5000,
           "expectedStatus": "200",
           "concurrents": 20,
           "messagesPerConcurrent": 100
@@ -109,7 +107,6 @@ then simply include the method field in your attack config:
 ```
 {
   "type": "HTTP_SPAM",
-  "maxResponseTime": 5000,
   "expectedStatus": "200",
   "concurrents": 20,
   "messagesPerConcurrent": 100,
