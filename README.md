@@ -2,6 +2,7 @@
 
 ![Build Status](https://travis-ci.org/ChrisCooney/fuzz-monkey.svg?branch=master "Build Status")
 [![Coverage](https://codecov.io/gh/ChrisCooney/fuzz-monkey/branch/master/graph/badge.svg)](https://codecov.io/gh/ChrisCooney/fuzz-monkey)
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/c59ca3588d3548868c64f71e1cc8f20e)](https://www.codacy.com/app/chris_cooney/fuzz-monkey?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=ChrisCooney/fuzz-monkey&amp;utm_campaign=Badge_Grade)
 
 Fuzz Monkey is a bit like chaos monkey only with more fur and instead of tearing
 down infrastructure like some kind of crazed baboon in a shoe shop, it carefully
