@@ -14,6 +14,11 @@ func BuildTcpUrl(host string, port string, path string) string {
 }
 
 func BuildNetworkPath(protocol string, host string, port string, path string) string {
+
+  if protocol == "" {
+    return fmt.Sprintf("%s:%s%s", host, port, path)
+  }
+
   return fmt.Sprintf("%s://%s:%s%s", protocol, host, port, path)
 }
 
@@ -38,6 +43,7 @@ func SendCorruptHttpData(endpoint string, c chan string) error {
   conn, err := net.Dial("tcp", endpoint)
 
   if err != nil {
+    fmt.Printf("%v", err)
     c <- ""
     return err
   }

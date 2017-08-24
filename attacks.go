@@ -94,7 +94,7 @@ func RunHttpSpam(endpointConfig EndpointConfig, attackConfig AttackConfig, respo
   responses := collectConcurrentHttpResponses(c, messageCount)
 
   if len(responses) == 0 {
-    responseChannel <- Response{AttackConfig: attackConfig, Passed: false, Report: fmt.Sprintf("Error occurred during HTTP Spam.")}
+    responseChannel <- Response{AttackConfig: attackConfig, Passed: false, Report: "Error occurred during HTTP Spam."}
     return nil
   }
 
@@ -112,10 +112,9 @@ func RunHttpSpam(endpointConfig EndpointConfig, attackConfig AttackConfig, respo
 func RunCorruptHttp(endpointConfig EndpointConfig, attackConfig AttackConfig, responseChannel chan Response) error {
   fmt.Printf("🔥 Running Corrupt HTTP against %s 🔥\n", endpointConfig.Name)
   c := make(chan string)
-  endpoint := BuildNetworkPath(endpointConfig.Protocol, endpointConfig.Host, endpointConfig.Port, endpointConfig.Path)
+  endpoint := BuildNetworkPath("", endpointConfig.Host, endpointConfig.Port, "")
 
   go SendCorruptHttpData(endpoint, c)
-
   rawResponse := <- c
 
   if rawResponse == "" {
