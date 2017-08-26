@@ -1,3 +1,4 @@
 scripts/
 build/
 fuzz-monkey.json
+.idea/
