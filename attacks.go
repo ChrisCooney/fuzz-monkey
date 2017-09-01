@@ -140,12 +140,17 @@ func RunUrlQuery(endpointConfig EndpointConfig, attackConfig AttackConfig, respo
 
   params := strings.Split(attackConfig.Parameters, ",")
 
+  fakeValues := []string{"hello", "&hello", "@", "\""}
+
   for _,param := range params {
-    attackPoint := fmt.Sprintf("%s?%s=themonkeysayshello", endpoint, param)
-    go SendHTTPRequest(attackPoint, c, "GET")
+    for _,value := range fakeValues {
+      attackPoint := fmt.Sprintf("%s?%s=%s", endpoint, param, value)
+      go SendHTTPRequest(attackPoint, c, "GET")
+    }
+
   }
 
-  responses := collectConcurrentHTTPResponses(c, len(params))
+  responses := collectConcurrentHTTPResponses(c, len(params) * len(fakeValues))
 
   if len(responses) == 0 {
     responseChannel <- Response{AttackConfig: attackConfig, Passed: false, Report: "Error occurred during URL Query Spam."}
