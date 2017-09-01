@@ -17,13 +17,13 @@ func main() {
 
 	if IsCIMode() {
 		fmt.Println("🔨 CI Mode detected. Each attack configuration will be ran in sequence for all endpoints.")
-		performSequentialAttack(config)
+		PerformSequentialAttack(config)
 	} else {
 		wakeTheMonkey(config)
 	}
 }
 
-func performSequentialAttack(config *Config) {
+func PerformSequentialAttack(config *Config) {
 	isFailure := false;
 
 	for _,endpoint := range config.Endpoints {
