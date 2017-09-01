@@ -67,6 +67,7 @@ field and the config parameters for that type of attack. The current attack type
 | -------------|-----|
 | HTTP_SPAM     | Goes to town on an endpoint with randomly selected HTTP requests. |
 | CORRUPT_HTTP  | Opens a TCP connection and makes corrupt HTTP requests at the endpoint. |
+| URL_QUERY_SPAM  | Takes a provided list of parameters and tries known dangerous values  |
 
 For example, in your config, your attack might look something like:
 
@@ -89,6 +90,11 @@ For example, in your config, your attack might look something like:
           "expectedStatus": "200",
           "concurrents": 20,
           "messagesPerConcurrent": 100
+        },
+        {
+          "type": "URL_QUERY_SPAM",
+          "expectedStatus": "400",
+          "parameters": "a,b,c"
         }
       ]
     }
