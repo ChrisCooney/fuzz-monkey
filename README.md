@@ -9,7 +9,7 @@ down infrastructure like some kind of crazed baboon in a shoe shop, it carefully
 and surgically flings its poop at specific http endpoints. It ain't pretty,
 but it's damn sure fuzzy.
 
-![CLI](/assets/cli.png?raw=true "CLI")
+![CLI](/assets/cliv1.1.png?raw=true "CLI")
 
 ## Building the Binary
 
