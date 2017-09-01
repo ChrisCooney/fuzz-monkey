@@ -10,6 +10,11 @@
         {
           "type": "CORRUPT_HTTP",
           "expectedStatus": "400"
+        },
+        {
+          "type": "URL_QUERY_SPAM",
+          "expectedStatus": "400",
+          "parameters": "a,b,c"
         }
       ]
     },

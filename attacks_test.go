@@ -9,11 +9,11 @@ import (
 
 func TestRunHTTPSpam(t *testing.T) {
   t.Run("Test run HTTP spam correctly reports on endpoints", func(t *testing.T) {
-    createMockHTTPServer()
+    createMockHTTPServer(200)
     defer httpmock.DeactivateAndReset()
     c := createResponseChannel()
 
-    endpoint, attack := CreateTestEndpointAndAttackConfiguration("200")
+    endpoint, attack := CreateTestEndpointAndAttackConfiguration("200", "HTTP_SPAM")
 
     go RunHTTPSpam(endpoint, attack, c)
 
@@ -23,7 +23,7 @@ func TestRunHTTPSpam(t *testing.T) {
       t.Error("Valid config provided to HTTP Spam. HTTP SPAM did not return a passing report.")
     }
 
-    endpoint, attack = CreateTestEndpointAndAttackConfiguration("404")
+    endpoint, attack = CreateTestEndpointAndAttackConfiguration("404", "HTTP_SPAM")
 
     go RunHTTPSpam(endpoint, attack, c)
 
@@ -39,7 +39,7 @@ func TestRunCorruptHTTP(t *testing.T) {
   t.Run("Test run Corrupt HTTP correctly reports on endpoints", func(t *testing.T) {
     go createMockTcpServer()
     c := createResponseChannel()
-    endpoint, attack := CreateTestEndpointAndAttackConfiguration("200")
+    endpoint, attack := CreateTestEndpointAndAttackConfiguration("200", "CORRUPT_HTTP")
 
     go RunCorruptHTTP(endpoint, attack, c)
 
@@ -49,7 +49,7 @@ func TestRunCorruptHTTP(t *testing.T) {
       t.Errorf("Valid config provided to corrupt HTTP. Corrupt HTTP did not return a passing report. %v", response)
     }
 
-    endpoint, attack = CreateTestEndpointAndAttackConfiguration("404")
+    endpoint, attack = CreateTestEndpointAndAttackConfiguration("404", "CORRUPT_HTTP")
 
     go RunCorruptHTTP(endpoint, attack, c)
 
@@ -61,11 +61,40 @@ func TestRunCorruptHTTP(t *testing.T) {
   })
 }
 
-func createMockHTTPServer() {
+func TestRunURLQuery(t *testing.T) {
+  t.Run("Test run URL Query attack correctly reports on endpoints", func(t *testing.T) {
+    // Spin up a HTTP server with the right values
+    createMockHTTPServer(400)
+    defer httpmock.DeactivateAndReset()
+    c := createResponseChannel()
+
+    endpoint, attack := CreateTestEndpointAndAttackConfiguration("400", "URL_QUERY_SPAM")
+
+    go RunUrlQuery(endpoint, attack, c)
+
+    response := <- c
+
+    if !response.Passed {
+      t.Error("Valid config which should have passed provided, but reported as failing")
+    }
+
+    endpoint, attack = CreateTestEndpointAndAttackConfiguration("200", "URL_QUERY_SPAM")
+
+    go RunUrlQuery(endpoint, attack, c)
+
+    response = <- c
+
+    if response.Passed {
+      t.Error("Valid config which should not have passed provided, but reported as passing.")
+    }
+  })
+}
+
+func createMockHTTPServer(status int) {
   httpmock.Activate()
 
   httpmock.RegisterResponder("GET", "http://localhost:8080/my-endpoint",
-    httpmock.NewStringResponder(200, `[{"something": 1}]`))
+    httpmock.NewStringResponder(status, `[{"something": 1}]`))
 }
 
 func createMockTcpServer() {
@@ -81,7 +110,7 @@ func createMockTcpServer() {
         fmt.Println("Mock TCP Server returning 200")
         conn.Write([]byte("MOCK RESPONSE: 200\n"))
         defer conn.Close()
-        
+
         count ++
 
         if(count == 2) {

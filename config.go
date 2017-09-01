@@ -28,6 +28,7 @@ type AttackConfig struct {
   Concurrents int `json:"concurrents"`
   MessagesPerConcurrent int `json:"messagesPerConcurrent"`
   Method string `json:"method"`
+  Parameters string `json:"parameters"`
 }
 
 func GetConfig(configPath string) (*Config) {

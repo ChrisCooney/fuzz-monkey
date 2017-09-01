@@ -17,7 +17,7 @@ func main() {
 }
 
 func wakeTheMonkey(config *Config) {
-	fmt.Println("🐒 Waking the Monkey 🐒")
+	fmt.Println("🐒 Waking the Monkey")
 	responseChannel := make(chan Response)
 	SetupTargets(config, responseChannel)
 	listenForResponses(responseChannel)
@@ -28,10 +28,10 @@ func listenForResponses(responseChannel chan Response) {
 		response := <- responseChannel
 
 		if response.Passed {
-			fmt.Printf("✅ Attack %s Passed ✅\n", response.AttackConfig.Type)
+			fmt.Printf("✅ Attack %s Passed\n", response.AttackConfig.Type)
 		} else {
-			fmt.Printf("❌ Attack %s Failed ❌\n", response.AttackConfig.Type)
-			fmt.Printf("❌ Reason: %s ❌\n", response.Report)
+			fmt.Printf("❌ Attack %s Failed\n", response.AttackConfig.Type)
+			fmt.Printf("❌ Reason: %s\n", response.Report)
 		}
 	}
 }
@@ -39,7 +39,7 @@ func listenForResponses(responseChannel chan Response) {
 // Sets up the targets in the config file for attack.
 func SetupTargets(config *Config, responseChannel chan Response) {
 	for _,endpoint := range config.Endpoints {
-		fmt.Printf("🎯 Setting up %s 🎯\n", endpoint.Name)
+		fmt.Printf("🎯 Setting up %s\n", endpoint.Name)
 		setupAttackThreads(endpoint, responseChannel)
 	}
 }

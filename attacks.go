@@ -83,7 +83,7 @@ func readResponseFromChannel(responses []*http.Response, c chan *http.Response) 
 
 // Fires off the requested number of concurrent messages at an endpoint and tests response.
 func RunHTTPSpam(endpointConfig EndpointConfig, attackConfig AttackConfig, responseChannel chan Response) error {
-  fmt.Printf("🔥 Running HTTP Spam against %s 🔥\n", endpointConfig.Name)
+  fmt.Printf("🔥 Running HTTP Spam against %s \n", endpointConfig.Name)
 
   c := make(chan *http.Response)
 
@@ -112,7 +112,7 @@ func RunHTTPSpam(endpointConfig EndpointConfig, attackConfig AttackConfig, respo
 
 // Fires off a Corrupted HTTP request at the specific endpoint.
 func RunCorruptHTTP(endpointConfig EndpointConfig, attackConfig AttackConfig, responseChannel chan Response) error {
-  fmt.Printf("🔥 Running Corrupt HTTP against %s 🔥\n", endpointConfig.Name)
+  fmt.Printf("🔥 Running Corrupt HTTP against %s \n", endpointConfig.Name)
   c := make(chan string)
   endpoint := BuildNetworkPath("", endpointConfig.Host, endpointConfig.Port, "")
 
@@ -129,5 +129,36 @@ func RunCorruptHTTP(endpointConfig EndpointConfig, attackConfig AttackConfig, re
   }
 
   responseChannel <- Response{AttackConfig: attackConfig, Passed: true, Report: fmt.Sprintf("Corrupt HTTP Test passed for endpoint %s", endpointConfig.Name)}
+  return nil
+}
+
+func RunUrlQuery(endpointConfig EndpointConfig, attackConfig AttackConfig, responseChannel chan Response) error {
+  fmt.Printf("🔥 Running URL Query Spam against %s \n", endpointConfig.Name)
+  c := make(chan *http.Response)
+
+  endpoint := BuildNetworkPath(endpointConfig.Protocol, endpointConfig.Host, endpointConfig.Port, endpointConfig.Path)
+
+  params := strings.Split(attackConfig.Parameters, ",")
+
+  for _,param := range params {
+    attackPoint := fmt.Sprintf("%s?%s=themonkeysayshello", endpoint, param)
+    go SendHTTPRequest(attackPoint, c, "GET")
+  }
+
+  responses := collectConcurrentHTTPResponses(c, len(params))
+
+  if len(responses) == 0 {
+    responseChannel <- Response{AttackConfig: attackConfig, Passed: false, Report: "Error occurred during URL Query Spam."}
+    return nil
+  }
+
+  passed, reason, expected, actual := checkHTTPResponses(responses, attackConfig)
+
+  if !passed {
+    responseChannel <- Response{Expected: expected, Actual: actual, AttackConfig: attackConfig, Passed: false, Report: fmt.Sprintf("Failure during URL Query Spam. %s", reason)}
+    return nil
+  }
+
+  responseChannel <- Response{AttackConfig: attackConfig, Passed: true, Report: fmt.Sprintf("URL Query Spam passed for endpoint %s", endpointConfig.Name)}
   return nil
 }
