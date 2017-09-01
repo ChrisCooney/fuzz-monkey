@@ -5,6 +5,7 @@ import (
 	"math/rand"
 	"time"
 	"errors"
+	"os"
 )
 
 var MAX_TIME_BETWEEN_ATTACKS = 60
@@ -13,7 +14,32 @@ var ATTACKS_STRATEGY = map[string](func(endpointConfig EndpointConfig, attackCon
 
 func main() {
 	config := GetConfigFromCli()
-	wakeTheMonkey(config)
+
+	if IsCIMode() {
+		fmt.Println("🔨 CI Mode detected. Each attack configuration will be ran in sequence for all endpoints.")
+		performSequentialAttack(config)
+	} else {
+		wakeTheMonkey(config)
+	}
+}
+
+func performSequentialAttack(config *Config) {
+	isFailure := false;
+
+	for _,endpoint := range config.Endpoints {
+		for _,attack := range endpoint.Attacks {
+			response := executeAttackSync(endpoint, attack)
+
+			isFailure = isFailure && response.Passed
+			logResponse(response)
+		}
+	}
+
+	if isFailure {
+		os.Exit(1)
+	}
+
+	os.Exit(0)
 }
 
 func wakeTheMonkey(config *Config) {
@@ -26,13 +52,15 @@ func wakeTheMonkey(config *Config) {
 func listenForResponses(responseChannel chan Response) {
 	for {
 		response := <- responseChannel
+		logResponse(response)
+	}
+}
 
-		if response.Passed {
-			fmt.Printf("✅ Attack %s Passed\n", response.AttackConfig.Type)
-		} else {
-			fmt.Printf("❌ Attack %s Failed\n", response.AttackConfig.Type)
-			fmt.Printf("❌ Reason: %s\n", response.Report)
-		}
+func logResponse(response Response) {
+	if response.Passed {
+		fmt.Printf("✅ Attack %s Passed\n", response.AttackConfig.Type)
+	} else {
+		fmt.Printf("❌ Attack %s Failed: %s\n", response.AttackConfig.Type, response.Report)
 	}
 }
 
@@ -52,15 +80,33 @@ func setupAttackThreads(endpoint EndpointConfig, responseChannel chan Response) 
 
 func beginHarassment(endpoint EndpointConfig, attack AttackConfig, responseChannel chan Response) {
 	for {
-		attackFunc, present := ATTACKS_STRATEGY[attack.Type]
-
-		if !present {
-			panic(errors.New(fmt.Sprintf("Unknown attack type %s", attack.Type)))
-		}
-
-		go attackFunc(endpoint, attack, responseChannel)
+		executeAttack(endpoint, attack, responseChannel)
 		pauseForRandomDuration()
 	}
+}
+
+func executeAttack(endpoint EndpointConfig, attack AttackConfig, responseChannel chan Response) {
+	attackFunc := getAttackFunction(attack)
+	go attackFunc(endpoint, attack, responseChannel)
+}
+
+func executeAttackSync(endpoint EndpointConfig, attack AttackConfig) Response {
+	attackFunc := getAttackFunction(attack)
+	responseChannel := make(chan Response)
+	go attackFunc(endpoint, attack, responseChannel)
+	response := <- responseChannel
+
+	return response
+}
+
+func getAttackFunction(attack AttackConfig) (func(endpointConfig EndpointConfig, attackConfig AttackConfig, responseChannel chan Response) error) {
+	attackFunc, present := ATTACKS_STRATEGY[attack.Type]
+
+	if !present {
+		panic(errors.New(fmt.Sprintf("Unknown attack type %s", attack.Type)))
+	}
+
+	return attackFunc
 }
 
 func pauseForRandomDuration() {

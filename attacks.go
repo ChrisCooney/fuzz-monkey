@@ -83,8 +83,6 @@ func readResponseFromChannel(responses []*http.Response, c chan *http.Response) 
 
 // Fires off the requested number of concurrent messages at an endpoint and tests response.
 func RunHTTPSpam(endpointConfig EndpointConfig, attackConfig AttackConfig, responseChannel chan Response) error {
-  fmt.Printf("🔥 Running HTTP Spam against %s \n", endpointConfig.Name)
-
   c := make(chan *http.Response)
 
   endpoint := BuildNetworkPath(endpointConfig.Protocol, endpointConfig.Host, endpointConfig.Port, endpointConfig.Path)
@@ -112,7 +110,6 @@ func RunHTTPSpam(endpointConfig EndpointConfig, attackConfig AttackConfig, respo
 
 // Fires off a Corrupted HTTP request at the specific endpoint.
 func RunCorruptHTTP(endpointConfig EndpointConfig, attackConfig AttackConfig, responseChannel chan Response) error {
-  fmt.Printf("🔥 Running Corrupt HTTP against %s \n", endpointConfig.Name)
   c := make(chan string)
   endpoint := BuildNetworkPath("", endpointConfig.Host, endpointConfig.Port, "")
 
@@ -120,12 +117,12 @@ func RunCorruptHTTP(endpointConfig EndpointConfig, attackConfig AttackConfig, re
   rawResponse := <- c
 
   if rawResponse == "" {
-    responseChannel <- Response{AttackConfig: attackConfig, Passed: false, Report: "Error occurred during corrupt HTTP attack. Expected valid response but got empty String."}
+    responseChannel <- Response{AttackConfig: attackConfig, Passed: false, Report: "Expected valid response but got empty String."}
     return nil
   }
 
   if !strings.Contains(rawResponse, attackConfig.ExpectedStatus) {
-    responseChannel <- Response{AttackConfig: attackConfig, Passed: false, Report: fmt.Sprintf("Failure during Corrupt HTTP. Expected Status = %s | Actual Response = %s", attackConfig.ExpectedStatus, rawResponse)}
+    responseChannel <- Response{AttackConfig: attackConfig, Passed: false, Report: fmt.Sprintf("Expected Status = %s | Actual Response = %s", attackConfig.ExpectedStatus, rawResponse)}
   }
 
   responseChannel <- Response{AttackConfig: attackConfig, Passed: true, Report: fmt.Sprintf("Corrupt HTTP Test passed for endpoint %s", endpointConfig.Name)}
@@ -133,7 +130,6 @@ func RunCorruptHTTP(endpointConfig EndpointConfig, attackConfig AttackConfig, re
 }
 
 func RunUrlQuery(endpointConfig EndpointConfig, attackConfig AttackConfig, responseChannel chan Response) error {
-  fmt.Printf("🔥 Running URL Query Spam against %s \n", endpointConfig.Name)
   c := make(chan *http.Response)
 
   endpoint := BuildNetworkPath(endpointConfig.Protocol, endpointConfig.Host, endpointConfig.Port, endpointConfig.Path)
@@ -153,14 +149,14 @@ func RunUrlQuery(endpointConfig EndpointConfig, attackConfig AttackConfig, respo
   responses := collectConcurrentHTTPResponses(c, len(params) * len(fakeValues))
 
   if len(responses) == 0 {
-    responseChannel <- Response{AttackConfig: attackConfig, Passed: false, Report: "Error occurred during URL Query Spam."}
+    responseChannel <- Response{AttackConfig: attackConfig, Passed: false, Report: "Web Error Occurred."}
     return nil
   }
 
   passed, reason, expected, actual := checkHTTPResponses(responses, attackConfig)
 
   if !passed {
-    responseChannel <- Response{Expected: expected, Actual: actual, AttackConfig: attackConfig, Passed: false, Report: fmt.Sprintf("Failure during URL Query Spam. %s", reason)}
+    responseChannel <- Response{Expected: expected, Actual: actual, AttackConfig: attackConfig, Passed: false, Report: reason}
     return nil
   }
 
