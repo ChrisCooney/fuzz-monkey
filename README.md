@@ -21,6 +21,8 @@ go build -o monkey .
 
 ## Priming the Monkey for all out war
 
+### The "Chaos Monkey" way
+
 The Monkey is a chaotic but loyal warrior. You tell it where to fling and by the grace
 of God, it'll fling. The Monkey's instructions come in the form of a JSON file. When
 you send the Monkey off into battle, you can either target it's wrath like this:
@@ -119,3 +121,15 @@ then simply include the method field in your attack config:
   "method": "GET"
 }
 ```
+
+### CI Mode
+
+![CLI](/assets/ci-mode.png?raw=true "CI Mode")
+
+If you just want to run a single test through, you can do this by simply adding the `-c` switch
+to your command, for example:
+
+    ./monkey -c
+
+This will cause the application to run in CI mode. This will go through each of the attacks once
+and return with an error code if any of the attacks fail.
