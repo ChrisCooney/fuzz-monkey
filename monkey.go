@@ -8,8 +8,10 @@ import (
 	"os"
 )
 
+// Maximum time in seconds between two attacks when running in the background.
 var MaxTimeBetweenAttacks = 60
 
+// A map of attack names to attacks for use as a strategy pattern.
 var AttacksStrategy = map[string](func(endpointConfig EndpointConfig, attackConfig AttackConfig, responseChannel chan Response) error){"HTTP_SPAM": RunHTTPSpam,"CORRUPT_HTTP": RunCorruptHTTP,"URL_QUERY_SPAM": RunURLQuery}
 
 func main() {
