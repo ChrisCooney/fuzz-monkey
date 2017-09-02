@@ -70,7 +70,7 @@ func TestRunURLQuery(t *testing.T) {
 
     endpoint, attack := CreateTestEndpointAndAttackConfiguration("400", "URL_QUERY_SPAM")
 
-    go RunUrlQuery(endpoint, attack, c)
+    go RunURLQuery(endpoint, attack, c)
 
     response := <- c
 
@@ -80,7 +80,7 @@ func TestRunURLQuery(t *testing.T) {
 
     endpoint, attack = CreateTestEndpointAndAttackConfiguration("200", "URL_QUERY_SPAM")
 
-    go RunUrlQuery(endpoint, attack, c)
+    go RunURLQuery(endpoint, attack, c)
 
     response = <- c
 

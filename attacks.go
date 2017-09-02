@@ -129,7 +129,8 @@ func RunCorruptHTTP(endpointConfig EndpointConfig, attackConfig AttackConfig, re
   return nil
 }
 
-func RunUrlQuery(endpointConfig EndpointConfig, attackConfig AttackConfig, responseChannel chan Response) error {
+// Hits an endpoint with a set of dodgy values in parameters.
+func RunURLQuery(endpointConfig EndpointConfig, attackConfig AttackConfig, responseChannel chan Response) error {
   c := make(chan *http.Response)
 
   endpoint := BuildNetworkPath(endpointConfig.Protocol, endpointConfig.Host, endpointConfig.Port, endpointConfig.Path)
