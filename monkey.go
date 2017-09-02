@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"math/rand"
 	"time"
-	"errors"
 	"os"
 )
 
@@ -25,6 +24,7 @@ func main() {
 	}
 }
 
+// PerformSequentialAttack runs through each attack in config and run them in sequence.
 func PerformSequentialAttack(config *Config) {
 	isFailure := false;
 
@@ -66,7 +66,7 @@ func logResponse(response Response) {
 	}
 }
 
-// Sets up the targets in the config file for attack.
+// SetupTargets initialises the threads for each of the attacks.
 func SetupTargets(config *Config, responseChannel chan Response) {
 	for _,endpoint := range config.Endpoints {
 		fmt.Printf("🎯 Setting up %s\n", endpoint.Name)
@@ -105,7 +105,7 @@ func getAttackFunction(attack AttackConfig) (func(endpointConfig EndpointConfig,
 	attackFunc, present := AttacksStrategy[attack.Type]
 
 	if !present {
-		panic(errors.New(fmt.Sprintf("Unknown attack type %s", attack.Type)))
+		panic(fmt.Errorf("Unknown attack type %s", attack.Type))
 	}
 
 	return attackFunc

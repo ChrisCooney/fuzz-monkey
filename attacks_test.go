@@ -37,7 +37,7 @@ func TestRunHTTPSpam(t *testing.T) {
 
 func TestRunCorruptHTTP(t *testing.T) {
   t.Run("Test run Corrupt HTTP correctly reports on endpoints", func(t *testing.T) {
-    go createMockTcpServer()
+    go createMockTCPServer()
     c := createResponseChannel()
     endpoint, attack := CreateTestEndpointAndAttackConfiguration("200", "CORRUPT_HTTP")
 
@@ -97,7 +97,7 @@ func createMockHTTPServer(status int) {
     httpmock.NewStringResponder(status, `[{"something": 1}]`))
 }
 
-func createMockTcpServer() {
+func createMockTCPServer() {
   l, _ := net.Listen("tcp", ":8080")
   count := 0
   defer l.Close()

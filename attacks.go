@@ -6,6 +6,7 @@ import (
   "strings"
 )
 
+// Response is a struct representing the outcome of an attack.
 type Response struct {
   Passed bool
   Report string
@@ -81,7 +82,7 @@ func readResponseFromChannel(responses []*http.Response, c chan *http.Response) 
   return append(responses, response)
 }
 
-// Fires off the requested number of concurrent messages at an endpoint and tests response.
+// RunHTTPSpam fires off the requested number of concurrent messages at an endpoint and tests response.
 func RunHTTPSpam(endpointConfig EndpointConfig, attackConfig AttackConfig, responseChannel chan Response) error {
   c := make(chan *http.Response)
 
@@ -108,7 +109,7 @@ func RunHTTPSpam(endpointConfig EndpointConfig, attackConfig AttackConfig, respo
   return nil
 }
 
-// Fires off a Corrupted HTTP request at the specific endpoint.
+// RunCorruptHTTP fires off a Corrupted HTTP request at the specific endpoint.
 func RunCorruptHTTP(endpointConfig EndpointConfig, attackConfig AttackConfig, responseChannel chan Response) error {
   c := make(chan string)
   endpoint := BuildNetworkPath("", endpointConfig.Host, endpointConfig.Port, "")
@@ -129,7 +130,7 @@ func RunCorruptHTTP(endpointConfig EndpointConfig, attackConfig AttackConfig, re
   return nil
 }
 
-// Hits an endpoint with a set of dodgy values in parameters.
+// RunURLQuery hits an endpoint with a set of dodgy values in parameters.
 func RunURLQuery(endpointConfig EndpointConfig, attackConfig AttackConfig, responseChannel chan Response) error {
   c := make(chan *http.Response)
 
