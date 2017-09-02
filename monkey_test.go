@@ -8,7 +8,7 @@ import (
 
 func TestSetupAttackThreads(t *testing.T) {
   t.Run("Test that the monkey correctly reports failing attacks", func(t *testing.T) {
-    MAX_TIME_BETWEEN_ATTACKS = 20
+    MaxTimeBetweenAttacks = 20
     responseChannel := make(chan Response)
     config := CreateFullTestConfiguration("200", "HTTP_SPAM")
 

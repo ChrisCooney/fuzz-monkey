@@ -8,9 +8,9 @@ import (
 	"os"
 )
 
-var MAX_TIME_BETWEEN_ATTACKS = 60
+var MaxTimeBetweenAttacks = 60
 
-var ATTACKS_STRATEGY = map[string](func(endpointConfig EndpointConfig, attackConfig AttackConfig, responseChannel chan Response) error){"HTTP_SPAM": RunHTTPSpam,"CORRUPT_HTTP": RunCorruptHTTP,"URL_QUERY_SPAM": RunURLQuery}
+var AttacksStrategy = map[string](func(endpointConfig EndpointConfig, attackConfig AttackConfig, responseChannel chan Response) error){"HTTP_SPAM": RunHTTPSpam,"CORRUPT_HTTP": RunCorruptHTTP,"URL_QUERY_SPAM": RunURLQuery}
 
 func main() {
 	config := GetConfigFromCli()
@@ -100,7 +100,7 @@ func executeAttackSync(endpoint EndpointConfig, attack AttackConfig) Response {
 }
 
 func getAttackFunction(attack AttackConfig) (func(endpointConfig EndpointConfig, attackConfig AttackConfig, responseChannel chan Response) error) {
-	attackFunc, present := ATTACKS_STRATEGY[attack.Type]
+	attackFunc, present := AttacksStrategy[attack.Type]
 
 	if !present {
 		panic(errors.New(fmt.Sprintf("Unknown attack type %s", attack.Type)))
@@ -110,5 +110,5 @@ func getAttackFunction(attack AttackConfig) (func(endpointConfig EndpointConfig,
 }
 
 func pauseForRandomDuration() {
-	time.Sleep(time.Duration(rand.Intn(MAX_TIME_BETWEEN_ATTACKS)) * time.Second)
+	time.Sleep(time.Duration(rand.Intn(MaxTimeBetweenAttacks)) * time.Second)
 }
